@@ -8,6 +8,7 @@ if True: # Imports and Init
 
     picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
     libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
+    scriptdir = os.path.dirname(os.path.realpath(__file__))
     if os.path.exists(libdir):
         sys.path.append(libdir)
 
@@ -38,11 +39,11 @@ if True: # Imports and Init
     subs1 = 0
     subs2 = 0
 
-    with open('api.txt') as f:
+    with open(os.path.join(scriptdir, 'api.txt')) as f:
         line = f.read().split('\n')
         api = Api(api_key=line[0])
     
-    with open('channels.txt') as f:
+    with open(os.path.join(scriptdir, 'channels.txt')) as f:
         line = f.read().split('\n')
 
 
