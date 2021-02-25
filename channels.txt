@@ -1,0 +1,6 @@
+ID of channel #1
+Channel 1 name line 1
+Channel 1 name line 2
+ID of channel #2
+Channel 2 name line 1
+Channel 2 name line 2
