@@ -1,0 +1,6 @@
+Displays subscriber counts and views for 2 youtube channels. 
+
+Designed for Raspberry Pi Zero W + e-paper top hat 2.13-inch dual-color display.
+
+For it to work, you need to populate api.txt with your Google API (with Youtube API enabled).
+You also have to provide channel information in channels.txt
