@@ -3,6 +3,7 @@
 if True: # Imports and Init
     import sys
     import os
+    from datetime import datetime
     from time import sleep
     from pyyoutube import Api
 
@@ -34,10 +35,14 @@ if True: # Imports and Init
     font16 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 16)
     font14 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 14)
     font13 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 13)
+    font8  = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 8)
+    fontS8 = ImageFont.truetype(os.path.join(picdir, 'Symbola.ttf'), 8)
+    fontS10= ImageFont.truetype(os.path.join(picdir, 'Symbola.ttf'), 10)
     fontS15= ImageFont.truetype(os.path.join(picdir, 'Noto-emoji.ttf'), 15)
     fontS17= ImageFont.truetype(os.path.join(picdir, 'Symbola.ttf'), 17)
     subs1 = 0
     subs2 = 0
+    wifi = True
 
     with open(os.path.join(scriptdir, 'api.txt')) as f:
         line = f.read().split('\n')
@@ -45,7 +50,6 @@ if True: # Imports and Init
     
     with open(os.path.join(scriptdir, 'channels.txt')) as f:
         line = f.read().split('\n')
-
 
 
 if True: # functions
@@ -74,17 +78,22 @@ try: # main loop
     l = 0
     while True: 
         # Get Data
-        subs1_old = subs1
-        subs2_old = subs2
-        logging.info("Getting Youtube Data")
-        channel1 = api.get_channel_info(channel_id=line[0]).items[0].to_dict()
-        subs1 = channel1['statistics']['subscriberCount']
-        views1 = channel1['statistics']['viewCount']
-        channel2 = api.get_channel_info(channel_id=line[3]).items[0].to_dict()
-        subs2 = channel2['statistics']['subscriberCount']
-        views2 = channel2['statistics']['viewCount']
+        try: 
+            wifi_old = wifi
+            subs1_old = subs1
+            subs2_old = subs2
+            logging.info("Getting Youtube Data")
+            channel1 = api.get_channel_info(channel_id=line[0]).items[0].to_dict()
+            subs1 = channel1['statistics']['subscriberCount']
+            views1 = channel1['statistics']['viewCount']
+            channel2 = api.get_channel_info(channel_id=line[3]).items[0].to_dict()
+            subs2 = channel2['statistics']['subscriberCount']
+            views2 = channel2['statistics']['viewCount']
+            wifi = True
+        except:
+            wifi = False
 
-        if (subs1_old != subs1) or (subs2_old != subs2) or (l > 36): #update if something changed, or 6h passed
+        if (subs1_old != subs1) or (subs2_old != subs2) or (wifi_old != wifi) or (l > 36): #update if something changed, or 6h passed
             l = 0 # reset counter
             if not debug: #wake up
                 epd = epd2in13b_V3.EPD()
@@ -100,6 +109,8 @@ try: # main loop
                 width = 212
                 height = 104
             
+            now = datetime.now() # current date and time
+
             # Drawing on the image
             logging.info("Drawing")    
             Blackimage = Image.new('1', (width, height), 255)  # 212*104
@@ -119,19 +130,19 @@ try: # main loop
             
             Redimage.paste(logoimage, (w1,h1))
             drawblack.text((w1+40, h1), 'YouTube', font = font20, fill = 0)
-
-            
+ 
+            if wifi:
+                drawblack.text((width-30 , 1), "🔄", font = fontS8, fill = 0) #⟳↻🗘🔄
+                drawblack.text((width-20 , 1), now.strftime("%d.%m"), font = font8, fill = 0)
+                drawblack.text((width-20 , 9), now.strftime("%H:%M"), font = font8, fill = 0)
+            else:
+                drawblack.text((width-12 , 1), '📶', font = fontS10, fill = 0)
+                       
             drawcenteredtext(line[1], h2, font17, 1)
             drawcenteredtext(line[2], h3, font17, 1)
 
             drawcenteredtext(line[4], h2, font17, 2)
             drawcenteredtext(line[5], h3, font17, 2)
-
-            #drawcenteredtext(u'Subs: ' + prettyfy(subs1),  h4, font14, 1, 2, 'red')
-            #drawcenteredtext(u'Views: '+ prettyfy(views1), h5, font13, 1)
-
-            #drawcenteredtext(u'Subs: ' + prettyfy(subs2),  h4, font14, 2, 2, 'red')
-            #drawcenteredtext(u'Views: '+ prettyfy(views2), h5, font13, 2)
 
             drawblack.text((7 , h4-2), '👤', font = fontS15, fill = 0)
             drawblack.text((8 , h5+2), '👁', font = fontS17, fill = 0)
@@ -186,7 +197,8 @@ except IOError as e:
     logging.info("Clear...")
     epd.init()
     epd.Clear()
-    
+
+
 except KeyboardInterrupt:    
     logging.info("ctrl + c:")
     logging.info("Clear...")
