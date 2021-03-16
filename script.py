@@ -4,19 +4,17 @@ if True: # Imports and Init
     import sys
     import os
     from datetime import datetime
-    from time import sleep
+    import time
+    import logging
+    import traceback
     from pyyoutube import Api
+    from PIL import Image,ImageDraw,ImageFont
 
     picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
     libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
     scriptdir = os.path.dirname(os.path.realpath(__file__))
     if os.path.exists(libdir):
         sys.path.append(libdir)
-
-    import logging
-    import time
-    from PIL import Image,ImageDraw,ImageFont
-    import traceback
 
     try:
         from waveshare_epd import epd2in13b_V3
@@ -42,6 +40,8 @@ if True: # Imports and Init
     fontS17= ImageFont.truetype(os.path.join(picdir, 'Symbola.ttf'), 17)
     subs1 = 0
     subs2 = 0
+    views1 = 0
+    views2 = 0
     wifi = True
 
     with open(os.path.join(scriptdir, 'api.txt')) as f:
@@ -94,6 +94,7 @@ try: # main loop
             wifi = False
 
         if (subs1_old != subs1) or (subs2_old != subs2) or (wifi_old != wifi) or (l > 36): #update if something changed, or 6h passed
+
             l = 0 # reset counter
             if not debug: #wake up
                 epd = epd2in13b_V3.EPD()
@@ -110,6 +111,7 @@ try: # main loop
                 height = 104
             
             now = datetime.now() # current date and time
+            logging.info(now.strftime("%d/%m/%y %H:%M") + " Update: S1: " + prettyfy(subs1) + ", S2: " + prettyfy(subs2) + ", Wifi: " + str(wifi))
 
             # Drawing on the image
             logging.info("Drawing")    
@@ -188,7 +190,7 @@ try: # main loop
         if debug:
             break
         else:
-            sleep(600) # 10 minutes
+            time.sleep(600) # 10 minutes
             l = l + 1
 
 
