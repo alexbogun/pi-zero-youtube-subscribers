@@ -23,7 +23,10 @@ if True: # Imports and Init
         debug = True # debug mode mode (on PC)
 
     # setting loging level
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        format = '%(asctime)s %(levelname)s %(message)s',
+        level = logging.INFO, #DEBUG
+        datefmt='%d/%m/%y %H:%M')
 
     # importing fonts
     font20 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 20)
@@ -82,7 +85,7 @@ try: # main loop
             wifi_old = wifi
             subs1_old = subs1
             subs2_old = subs2
-            logging.info("Getting Youtube Data")
+            logging.info("Getting Youtube data")
             channel1 = api.get_channel_info(channel_id=line[0]).items[0].to_dict()
             subs1 = channel1['statistics']['subscriberCount']
             views1 = channel1['statistics']['viewCount']
@@ -98,20 +101,20 @@ try: # main loop
             l = 0 # reset counter
             if not debug: #wake up
                 epd = epd2in13b_V3.EPD()
-                logging.info("Init")
+                #logging.info("Init")
                 epd.init()
                 #epd.Clear()
                 time.sleep(1)
                 width = epd.height # the display orientation is different
                 height = epd.width
-                print("width:" + str(width))
-                print("height:" + str(height))
+                #print("width:" + str(width))
+                #print("height:" + str(height))
             else:
                 width = 212
                 height = 104
             
             now = datetime.now() # current date and time
-            logging.info(now.strftime("%d/%m/%y %H:%M") + " Update: S1: " + prettyfy(subs1) + ", S2: " + prettyfy(subs2) + ", Wifi: " + str(wifi))
+            logging.info("Update: S1: " + prettyfy(subs1) + ", S2: " + prettyfy(subs2) + ", Wifi: " + str(wifi))
 
             # Drawing on the image
             logging.info("Drawing")    
@@ -184,7 +187,7 @@ try: # main loop
 
 
             if not debug:    # Sleep
-                logging.info("Goto Sleep...")
+                logging.info("Going to sleep")
                 epd.sleep()
         
         if debug:
